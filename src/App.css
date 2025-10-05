@@ -3,11 +3,10 @@
 :root {
   --fire-1: #ff6a3d;
   --fire-2: #ff3d3d;
-  --data-1: #27e0ff;
-  --data-2: #00ffa6;
+  --fire-accent: #ff9d7a;
   --glass: rgba(15, 24, 35, 0.68);
-  --stroke: rgba(137, 180, 255, 0.16);
-  --text-primary: #cfe6ff;
+  --stroke: rgba(255, 106, 61, 0.2);
+  --text-primary: #ffebe6;
   --bg-dark: #0a0e1a;
   --bg-darker: #050810;
 }
@@ -24,7 +23,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Animated Grid Background */
 .app-container {
   min-height: 100vh;
   background: var(--bg-darker);
@@ -58,7 +56,6 @@ body {
   }
 }
 
-/* Particle Field */
 .app-container::after {
   content: '';
   position: fixed;
@@ -67,12 +64,12 @@ body {
   right: 0;
   bottom: 0;
   background-image:
-    radial-gradient(2px 2px at 20% 30%, var(--data-1), transparent),
-    radial-gradient(2px 2px at 60% 70%, var(--fire-1), transparent),
-    radial-gradient(1px 1px at 50% 50%, var(--data-2), transparent),
+    radial-gradient(2px 2px at 20% 30%, var(--fire-1), transparent),
+    radial-gradient(2px 2px at 60% 70%, var(--fire-2), transparent),
+    radial-gradient(1px 1px at 50% 50%, var(--fire-accent), transparent),
     radial-gradient(1px 1px at 80% 10%, var(--fire-2), transparent),
-    radial-gradient(2px 2px at 90% 60%, var(--data-1), transparent),
-    radial-gradient(1px 1px at 33% 80%, var(--fire-1), transparent);
+    radial-gradient(2px 2px at 90% 60%, var(--fire-1), transparent),
+    radial-gradient(1px 1px at 33% 80%, var(--fire-accent), transparent);
   background-size: 200% 200%;
   background-position: 50% 50%;
   animation: particleDrift 90s ease-in-out infinite;
@@ -108,7 +105,6 @@ body {
   z-index: 1;
 }
 
-/* Hero Section */
 .hero-section {
   text-align: center;
   margin-bottom: 48px;
@@ -134,7 +130,7 @@ body {
   font-family: 'Orbitron', monospace;
   font-size: 3.5rem;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--data-1) 0%, var(--data-2) 100%);
+  background: linear-gradient(135deg, var(--fire-1) 0%, var(--fire-2) 50%, var(--fire-accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -147,18 +143,18 @@ body {
 
 .title-glow {
   animation: titleShimmer 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 30px rgba(39, 224, 255, 0.4));
+  filter: drop-shadow(0 0 30px rgba(255, 106, 61, 0.4));
 }
 
 @keyframes titleShimmer {
 
   0%,
   100% {
-    filter: drop-shadow(0 0 30px rgba(39, 224, 255, 0.4));
+    filter: drop-shadow(0 0 30px rgba(255, 106, 61, 0.4));
   }
 
   50% {
-    filter: drop-shadow(0 0 50px rgba(0, 255, 166, 0.6));
+    filter: drop-shadow(0 0 50px rgba(255, 61, 61, 0.6));
   }
 }
 
@@ -169,7 +165,6 @@ body {
   opacity: 0.8;
 }
 
-/* Search Section */
 .search-section {
   margin-bottom: 32px;
   animation: fadeInUp 0.8s ease 0.2s backwards;
@@ -182,7 +177,7 @@ body {
   border-radius: 24px;
   padding: 32px;
   box-shadow:
-    0 0 60px rgba(39, 224, 255, 0.1),
+    0 0 60px rgba(255, 106, 61, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   position: relative;
 }
@@ -194,7 +189,7 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--data-1), transparent);
+  background: linear-gradient(90deg, transparent, var(--fire-1), transparent);
   animation: scanline 3s linear infinite;
 }
 
@@ -230,7 +225,7 @@ body {
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--data-1);
+  color: var(--fire-1);
   width: 20px;
   height: 20px;
   pointer-events: none;
@@ -250,22 +245,22 @@ body {
 }
 
 .input-modern:focus {
-  border-color: var(--data-1);
+  border-color: var(--fire-1);
   background: rgba(10, 14, 26, 0.95);
-  box-shadow: 0 0 30px rgba(39, 224, 255, 0.3);
+  box-shadow: 0 0 30px rgba(255, 106, 61, 0.3);
 }
 
 .input-modern::placeholder {
-  color: rgba(207, 230, 255, 0.4);
+  color: rgba(255, 235, 230, 0.4);
 }
 
 .btn-primary {
   width: 100%;
   padding: 18px 32px;
-  background: linear-gradient(135deg, var(--data-1) 0%, var(--data-2) 100%);
+  background: linear-gradient(135deg, var(--fire-1) 0%, var(--fire-2) 100%);
   border: none;
   border-radius: 16px;
-  color: var(--bg-darker);
+  color: #ffffff;
   font-size: 1.125rem;
   font-weight: 700;
   cursor: pointer;
@@ -274,14 +269,14 @@ body {
   justify-content: center;
   gap: 12px;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 40px rgba(39, 224, 255, 0.4);
+  box-shadow: 0 10px 40px rgba(255, 106, 61, 0.4);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 15px 50px rgba(39, 224, 255, 0.6);
+  box-shadow: 0 15px 50px rgba(255, 106, 61, 0.6);
 }
 
 .btn-primary:disabled {
@@ -292,8 +287,8 @@ body {
 .spinner {
   width: 20px;
   height: 20px;
-  border: 3px solid rgba(10, 14, 26, 0.3);
-  border-top-color: var(--bg-darker);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -304,7 +299,6 @@ body {
   }
 }
 
-/* Map Section */
 .map-section {
   margin-bottom: 32px;
   animation: fadeInUp 0.8s ease 0.4s backwards;
@@ -325,11 +319,10 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 30% 30%, rgba(39, 224, 255, 0.1), transparent 50%);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 106, 61, 0.1), transparent 50%);
   pointer-events: none;
 }
 
-/* Dashboard */
 .dashboard {
   display: flex;
   flex-direction: column;
@@ -400,25 +393,25 @@ body {
 .risk-score-badge {
   margin-left: auto;
   text-align: center;
-  background: rgba(39, 224, 255, 0.1);
+  background: rgba(255, 106, 61, 0.1);
   padding: 16px 24px;
   border-radius: 16px;
-  border: 1px solid var(--data-1);
-  box-shadow: 0 0 30px rgba(39, 224, 255, 0.2);
+  border: 1px solid var(--fire-1);
+  box-shadow: 0 0 30px rgba(255, 106, 61, 0.2);
 }
 
 .score-number {
   font-family: 'Orbitron', monospace;
   font-size: 2.5rem;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--data-1) 0%, var(--data-2) 100%);
+  background: linear-gradient(135deg, var(--fire-1) 0%, var(--fire-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .score-label {
-  color: var(--data-1);
+  color: var(--fire-1);
   font-size: 0.875rem;
   margin-top: 4px;
   text-transform: uppercase;
@@ -426,14 +419,14 @@ body {
 }
 
 .threat-alert {
-  background: rgba(39, 224, 255, 0.08);
-  border: 1px solid var(--data-1);
+  background: rgba(255, 106, 61, 0.08);
+  border: 1px solid var(--fire-1);
   border-radius: 16px;
   padding: 16px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--data-1);
+  color: var(--fire-accent);
   margin-bottom: 20px;
 }
 
@@ -442,10 +435,10 @@ body {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: rgba(0, 255, 166, 0.1);
-  border: 1px solid var(--data-2);
+  background: rgba(255, 157, 122, 0.1);
+  border: 1px solid var(--fire-accent);
   border-radius: 12px;
-  color: var(--data-2);
+  color: var(--fire-accent);
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 20px;
@@ -490,18 +483,31 @@ body {
   margin-top: 24px;
 }
 
-.weather-panel {
+.weather-panel,
+.forecast-section,
+.events-section,
+.chat-panel,
+.resources-panel {
   background: var(--glass);
   backdrop-filter: blur(20px);
   border: 1px solid var(--stroke);
   border-radius: 24px;
   padding: 32px;
   box-shadow:
-    0 0 60px rgba(39, 224, 255, 0.1),
+    0 0 60px rgba(255, 106, 61, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-/* Metrics Grid */
+.section-title {
+  font-family: 'Orbitron', monospace;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -525,15 +531,15 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at top left, rgba(39, 224, 255, 0.05), transparent 70%);
+  background: radial-gradient(circle at top left, rgba(255, 106, 61, 0.05), transparent 70%);
   border-radius: 20px;
   pointer-events: none;
 }
 
 .metric-card:hover {
   transform: translateY(-4px);
-  border-color: var(--data-1);
-  box-shadow: 0 0 40px rgba(39, 224, 255, 0.3);
+  border-color: var(--fire-1);
+  box-shadow: 0 0 40px rgba(255, 106, 61, 0.3);
 }
 
 .metric-icon {
@@ -563,28 +569,6 @@ body {
   font-weight: 700;
 }
 
-/* Forecast Section */
-.forecast-section {
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--stroke);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow:
-    0 0 60px rgba(39, 224, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.section-title {
-  font-family: 'Orbitron', monospace;
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 24px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
 .forecast-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -602,12 +586,12 @@ body {
 
 .forecast-card-modern:hover {
   transform: translateY(-4px);
-  border-color: var(--data-1);
-  box-shadow: 0 0 30px rgba(39, 224, 255, 0.2);
+  border-color: var(--fire-1);
+  box-shadow: 0 0 30px rgba(255, 106, 61, 0.2);
 }
 
 .forecast-header {
-  color: var(--data-1);
+  color: var(--fire-1);
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 12px;
@@ -650,18 +634,6 @@ body {
   color: var(--fire-2);
   font-size: 0.75rem;
   font-weight: 600;
-}
-
-/* Events Section */
-.events-section {
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--stroke);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow:
-    0 0 60px rgba(255, 106, 61, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .events-list-modern {
@@ -727,10 +699,10 @@ body {
 
 .event-link-btn {
   padding: 8px 16px;
-  background: rgba(39, 224, 255, 0.1);
-  border: 1px solid var(--data-1);
+  background: rgba(255, 106, 61, 0.1);
+  border: 1px solid var(--fire-1);
   border-radius: 10px;
-  color: var(--data-1);
+  color: var(--fire-1);
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 600;
@@ -739,28 +711,16 @@ body {
 }
 
 .event-link-btn:hover {
-  background: rgba(39, 224, 255, 0.2);
+  background: rgba(255, 106, 61, 0.2);
   transform: translateX(4px);
-  box-shadow: 0 0 20px rgba(39, 224, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 106, 61, 0.3);
 }
 
-/* Community Section - Chat & Resources */
 .community-section {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
   gap: 24px;
   margin-top: 24px;
-}
-
-.chat-panel {
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--stroke);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow:
-    0 0 60px rgba(39, 224, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .chat-messages {
@@ -783,16 +743,16 @@ body {
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background: var(--data-1);
+  background: var(--fire-1);
   border-radius: 4px;
 }
 
 .chat-message {
   margin-bottom: 16px;
   padding: 12px;
-  background: rgba(39, 224, 255, 0.05);
+  background: rgba(255, 106, 61, 0.05);
   border-radius: 8px;
-  border-left: 3px solid var(--data-1);
+  border-left: 3px solid var(--fire-1);
   animation: slideIn 0.3s ease;
 }
 
@@ -816,7 +776,7 @@ body {
 }
 
 .chat-meta strong {
-  color: var(--data-1);
+  color: var(--fire-1);
   font-weight: 600;
 }
 
@@ -856,19 +816,19 @@ body {
 
 .chat-input-name:focus,
 .chat-input-message:focus {
-  border-color: var(--data-1);
-  box-shadow: 0 0 20px rgba(39, 224, 255, 0.2);
+  border-color: var(--fire-1);
+  box-shadow: 0 0 20px rgba(255, 106, 61, 0.2);
 }
 
 .chat-input-name::placeholder,
 .chat-input-message::placeholder {
-  color: rgba(207, 230, 255, 0.4);
+  color: rgba(255, 235, 230, 0.4);
 }
 
 .chat-send-btn {
   padding: 12px 24px;
-  background: linear-gradient(135deg, var(--data-1) 0%, var(--data-2) 100%);
-  color: var(--bg-darker);
+  background: linear-gradient(135deg, var(--fire-1) 0%, var(--fire-2) 100%);
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   font-size: 14px;
@@ -881,19 +841,7 @@ body {
 
 .chat-send-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(39, 224, 255, 0.4);
-}
-
-/* Resources Panel */
-.resources-panel {
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--stroke);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow:
-    0 0 60px rgba(255, 106, 61, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(255, 106, 61, 0.4);
 }
 
 .resources-list {
@@ -951,15 +899,15 @@ body {
 }
 
 .safety-tips {
-  background: rgba(39, 224, 255, 0.08);
-  border: 1px solid var(--data-1);
+  background: rgba(255, 106, 61, 0.08);
+  border: 1px solid var(--fire-1);
   border-radius: 12px;
   padding: 16px;
 }
 
 .tips-title {
   font-family: 'Orbitron', monospace;
-  color: var(--data-1);
+  color: var(--fire-1);
   font-size: 14px;
   font-weight: 700;
   margin-bottom: 12px;
@@ -986,11 +934,10 @@ body {
   content: '▸';
   position: absolute;
   left: 0;
-  color: var(--data-1);
+  color: var(--fire-1);
   font-weight: bold;
 }
 
-/* Data Sources */
 .data-sources {
   display: flex;
   justify-content: center;
@@ -1001,17 +948,16 @@ body {
 
 .source-badge {
   padding: 8px 16px;
-  background: rgba(39, 224, 255, 0.1);
-  border: 1px solid var(--data-1);
+  background: rgba(255, 106, 61, 0.1);
+  border: 1px solid var(--fire-1);
   border-radius: 12px;
-  color: var(--data-1);
+  color: var(--fire-1);
   font-size: 0.875rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-/* Error Panel */
 .error-panel {
   background: rgba(127, 29, 29, 0.2);
   border: 1px solid var(--fire-2);
@@ -1025,7 +971,6 @@ body {
   box-shadow: 0 0 40px rgba(255, 61, 61, 0.2);
 }
 
-/* Color Classes */
 .text-red-600 {
   color: #dc2626;
 }
@@ -1050,7 +995,6 @@ body {
   color: #16a34a;
 }
 
-/* Animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -1063,7 +1007,6 @@ body {
   }
 }
 
-/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
 
   *,
@@ -1080,13 +1023,16 @@ body {
   }
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
   .hero-title {
     font-size: 2.5rem;
   }
 
   .forecast-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .community-section {
     grid-template-columns: 1fr;
   }
 }

@@ -41,129 +41,77 @@ export default function App() {
   const [mapZoom, setMapZoom] = useState(4);
   const [weather, setWeather] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
-  const [lastMessageId, setLastMessageId] = useState(0);
+  const [username, setUsername] = useState('');
+  const [messageText, setMessageText] = useState('');
 
-  // Chat functionality - Poll for new messages
+  // Load messages from localStorage on mount and poll for updates
   useEffect(() => {
-    const pollMessages = async () => {
+    const loadMessages = () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/alerts/get_messages?last_message_id=${lastMessageId}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.messages && data.messages.length > 0) {
-            setChatMessages(prev => [...prev, ...data.messages]);
-            setLastMessageId(data.messages[data.messages.length - 1].id);
-
-            setTimeout(() => {
-              const messagesEl = document.getElementById('messages');
-              if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
-            }, 100);
-          }
+        const stored = localStorage.getItem('wildfire_chat_messages');
+        if (stored) {
+          const messages = JSON.parse(stored);
+          setChatMessages(messages);
         }
       } catch (err) {
-        console.error('Chat poll error:', err);
+        console.error('Error loading messages:', err);
       }
     };
 
-    const interval = setInterval(pollMessages, 2000);
-    pollMessages();
+    loadMessages();
+    const interval = setInterval(loadMessages, 1000);
+    window.addEventListener('storage', loadMessages);
 
-    return () => clearInterval(interval);
-  }, [lastMessageId]);
-
-  // Send message function
-  const sendChatMessage = async () => {
-    const usernameEl = document.getElementById('username');
-    const messageEl = document.getElementById('messageInput');
-
-    if (!messageEl || !messageEl.value.trim()) {
-      console.log('No message to send');
-      return;
-    }
-
-    const payload = {
-      message: messageEl.value.trim(),
-      username: (usernameEl && usernameEl.value.trim()) ? usernameEl.value.trim() : 'Anonymous'
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', loadMessages);
     };
+  }, []);
 
-    console.log('Sending message:', payload);
+  useEffect(() => {
+    const messagesEl = document.getElementById('messages');
+    if (messagesEl) {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+  }, [chatMessages]);
+
+  const sendChatMessage = () => {
+    if (!messageText.trim()) return;
 
     try {
-      const response = await fetch('http://127.0.0.1:5000/alerts/send_message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      const stored = localStorage.getItem('wildfire_chat_messages');
+      const messages = stored ? JSON.parse(stored) : [];
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Message sent successfully:', data);
-        messageEl.value = '';
+      const newMessage = {
+        id: Date.now(),
+        username: username.trim() || 'Anonymous',
+        message: messageText.trim(),
+        timestamp: new Date().toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        })
+      };
 
-        // Immediately poll for the new message
-        setTimeout(async () => {
-          try {
-            const pollResponse = await fetch(`http://127.0.0.1:5000/alerts/get_messages?last_message_id=${lastMessageId}`);
-            if (pollResponse.ok) {
-              const pollData = await pollResponse.json();
-              if (pollData.messages && pollData.messages.length > 0) {
-                setChatMessages(prev => [...prev, ...pollData.messages]);
-                setLastMessageId(pollData.messages[pollData.messages.length - 1].id);
-
-                setTimeout(() => {
-                  const messagesEl = document.getElementById('messages');
-                  if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
-                }, 100);
-              }
-            }
-          } catch (err) {
-            console.error('Poll after send error:', err);
-          }
-        }, 100);
-      } else {
-        console.error('Failed to send message:', response.status);
+      messages.push(newMessage);
+      if (messages.length > 100) {
+        messages.splice(0, messages.length - 100);
       }
+
+      localStorage.setItem('wildfire_chat_messages', JSON.stringify(messages));
+      setChatMessages(messages);
+      setMessageText('');
     } catch (err) {
-      console.error('Send message error:', err);
+      console.error('Error sending message:', err);
+      alert('Failed to send message. Please try again.');
     }
   };
 
-  // Setup event listeners for chat
-  useEffect(() => {
-    const handleSend = () => {
-      console.log('Send button clicked');
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
       sendChatMessage();
-    };
-
-    const handleEnter = (e) => {
-      if (e.key === 'Enter') {
-        console.log('Enter key pressed');
-        sendChatMessage();
-      }
-    };
-
-    const sendBtn = document.getElementById('sendBtn');
-    const messageInput = document.getElementById('messageInput');
-
-    if (sendBtn) {
-      sendBtn.addEventListener('click', handleSend);
-      console.log('Send button listener attached');
-    } else {
-      console.log('Send button not found');
     }
-
-    if (messageInput) {
-      messageInput.addEventListener('keydown', handleEnter);
-      console.log('Message input listener attached');
-    } else {
-      console.log('Message input not found');
-    }
-
-    return () => {
-      if (sendBtn) sendBtn.removeEventListener('click', handleSend);
-      if (messageInput) messageInput.removeEventListener('keydown', handleEnter);
-    };
-  }, [sendChatMessage]);
+  };
 
   const ecozoneData = {
     'boreal': { base: 0.85, seasonal: { 5: 0.92, 6: 0.95, 7: 0.93, 8: 0.88, 9: 0.75 }, description: 'Boreal Forest Zone' },
@@ -189,10 +137,31 @@ export default function App() {
     'yellowknife': 'taiga', 'whitehorse': 'taiga', 'iqaluit': 'tundra'
   };
 
+  const provinceResources = {
+    'AB': { name: 'Alberta', wildfire: '310-FIRE (310-3473)', wildfireInfo: 'Alberta Wildfire', website: 'https://www.alberta.ca/wildfire' },
+    'BC': { name: 'British Columbia', wildfire: '1-800-663-5555', wildfireInfo: 'BC Wildfire Service', website: 'https://www2.gov.bc.ca/gov/content/safety/wildfire-status' },
+    'SK': { name: 'Saskatchewan', wildfire: '1-866-404-4911', wildfireInfo: 'Saskatchewan Public Safety Agency', website: 'https://www.saskatchewan.ca/residents/environment-public-health-and-safety/wildfire-status' },
+    'MB': { name: 'Manitoba', wildfire: '1-800-782-0076', wildfireInfo: 'Manitoba Wildfire Program', website: 'https://www.gov.mb.ca/sd/fire/' },
+    'ON': { name: 'Ontario', wildfire: '1-877-847-1577', wildfireInfo: 'Ontario Fire Information', website: 'https://www.ontario.ca/page/forest-fires' },
+    'QC': { name: 'Quebec', wildfire: '1-800-463-FEUX (3389)', wildfireInfo: 'SOPFEU', website: 'https://sopfeu.qc.ca/' },
+    'NB': { name: 'New Brunswick', wildfire: '1-800-442-9799', wildfireInfo: 'NB Forest Fire Watch', website: 'https://www2.gnb.ca/content/gnb/en/departments/erd/natural_resources/content/forests/content/ForestProtection.html' },
+    'NS': { name: 'Nova Scotia', wildfire: '1-800-565-2224', wildfireInfo: 'NS Forest Protection', website: 'https://novascotia.ca/natr/forestprotection/' },
+    'PE': { name: 'Prince Edward Island', wildfire: '902-368-5044', wildfireInfo: 'PEI Forest Management', website: 'https://www.princeedwardisland.ca/en/information/environment-energy-and-climate-action/forest-management' },
+    'NL': { name: 'Newfoundland and Labrador', wildfire: '1-877-709-3473', wildfireInfo: 'NL Forest Fire Management', website: 'https://www.gov.nl.ca/ffa/forestry-and-wildlife/forest-fire-management/' },
+    'YT': { name: 'Yukon', wildfire: '1-888-798-3473', wildfireInfo: 'Yukon Wildland Fire', website: 'https://yukon.ca/en/emergencies-and-safety/emergency-preparedness/wildland-fire-information' },
+    'NT': { name: 'Northwest Territories', wildfire: '1-877-698-3473', wildfireInfo: 'NWT Fire Operations', website: 'https://www.gov.nt.ca/ecc/en/services/wildfire-operations' },
+    'NU': { name: 'Nunavut', wildfire: '1-867-975-5400', wildfireInfo: 'Nunavut Emergency Management', website: 'https://www.gov.nu.ca/community-and-government-services/information/emergency-management' }
+  };
+
   const provinceNames = {
     'AB': 'Alberta', 'BC': 'British Columbia', 'SK': 'Saskatchewan', 'MB': 'Manitoba', 'ON': 'Ontario', 'QC': 'Quebec',
     'NB': 'New Brunswick', 'NS': 'Nova Scotia', 'PE': 'Prince Edward Island', 'NL': 'Newfoundland and Labrador',
     'YT': 'Yukon', 'NT': 'Northwest Territories', 'NU': 'Nunavut'
+  };
+
+  const getProvinceResources = () => {
+    const provinceCode = province.toUpperCase().trim();
+    return provinceResources[provinceCode] || null;
   };
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -387,6 +356,8 @@ export default function App() {
       <div className="app-wrapper">
         <header className="hero-section">
           <div className="hero-content">
+            <div className="hero-badge">
+            </div>
             <h1 className="hero-title title-glow">
               Canadian Wildfire Risk Tracker
             </h1>
@@ -643,6 +614,16 @@ export default function App() {
             <div className="community-section">
               <div className="chat-panel">
                 <h3 className="section-title">Alert Communication System</h3>
+                <div className="chat-info" style={{
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid var(--fire-1)',
+                  borderRadius: '12px',
+                  padding: '12px',
+                  marginBottom: '16px',
+                  fontSize: '14px',
+                  color: 'var(--fire-1)'
+                }}>
+                </div>
                 <div id="messages" className="chat-messages">
                   {chatMessages.length === 0 ? (
                     <div style={{ color: 'var(--text-primary)', opacity: 0.5, padding: '20px', textAlign: 'center' }}>
@@ -661,22 +642,24 @@ export default function App() {
                 </div>
                 <div className="chat-controls">
                   <input
-                    id="username"
                     type="text"
                     placeholder="Your name (optional)"
                     className="chat-input-name"
-                    defaultValue=""
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    onKeyPress={handleKeyPress}
                   />
                   <input
-                    id="messageInput"
                     type="text"
                     placeholder="Share alert or safety information..."
                     className="chat-input-message"
-                    defaultValue=""
+                    value={messageText}
+                    onChange={(e) => setMessageText(e.target.value)}
+                    onKeyPress={handleKeyPress}
                   />
                   <button
-                    id="sendBtn"
                     className="chat-send-btn"
+                    onClick={sendChatMessage}
                     type="button"
                   >
                     Send
@@ -686,6 +669,22 @@ export default function App() {
 
               <div className="resources-panel">
                 <h3 className="section-title">Emergency Resources</h3>
+
+                {result && getProvinceResources() ? (
+                  <div style={{
+                    background: 'rgba(220, 38, 38, 0.15)',
+                    border: '1px solid var(--fire-2)',
+                    borderRadius: '12px',
+                    padding: '12px 16px',
+                    marginBottom: '16px',
+                    fontSize: '14px',
+                    color: 'var(--fire-accent)',
+                    fontWeight: '600'
+                  }}>
+                    Resources for {getProvinceResources().name}
+                  </div>
+                ) : null}
+
                 <div className="resources-list">
                   <div className="resource-item">
                     <div className="resource-icon">🚨</div>
@@ -695,45 +694,59 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="resource-item">
-                    <div className="resource-icon">🔥</div>
-                    <div className="resource-info">
-                      <div className="resource-title">Wildfire Info Line</div>
-                      <div className="resource-detail">1-888-336-7378 (24/7)</div>
+                  {result && getProvinceResources() ? (
+                    <div className="resource-item" style={{ borderColor: 'var(--fire-1)' }}>
+                      <div className="resource-icon">🔥</div>
+                      <div className="resource-info">
+                        <div className="resource-title">{getProvinceResources().wildfireInfo}</div>
+                        <div className="resource-detail">{getProvinceResources().wildfire}</div>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="resource-item">
-                    <div className="resource-icon">🏥</div>
-                    <div className="resource-info">
-                      <div className="resource-title">Health Link</div>
-                      <div className="resource-detail">811 - Health Advice</div>
+                  ) : (
+                    <div className="resource-item">
+                      <div className="resource-icon">🔥</div>
+                      <div className="resource-info">
+                        <div className="resource-title">Wildfire Info Line</div>
+                        <div className="resource-detail">Enter location to see provincial hotline</div>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="resource-item">
-                    <div className="resource-icon">📱</div>
-                    <div className="resource-info">
-                      <div className="resource-title">Alert Ready App</div>
-                      <div className="resource-detail">Download emergency alerts</div>
-                    </div>
-                  </div>
-
-                  <div className="resource-item">
-                    <div className="resource-icon">🏠</div>
-                    <div className="resource-info">
-                      <div className="resource-title">Evacuation Info</div>
-                      <div className="resource-detail">Local Emergency Management</div>
-                    </div>
-                  </div>
+                  )}
 
                   <div className="resource-item">
                     <div className="resource-icon">🌐</div>
                     <div className="resource-info">
                       <div className="resource-title">Red Cross Canada</div>
-                      <div className="resource-detail">redcross.ca - Disaster Help</div>
+                      <div className="resource-detail">
+                        <a
+                          href="https://www.redcross.ca"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: 'var(--fire-accent)', textDecoration: 'none' }}
+                        >
+                          redcross.ca - Disaster Help →
+                        </a>
+                      </div>
                     </div>
                   </div>
+
+                  {result && getProvinceResources() && (
+                    <div className="resource-item">
+                      <div className="resource-icon">ℹ️</div>
+                      <div className="resource-info">
+                        <div className="resource-title">Provincial Wildfire Info</div>
+                        <div className="resource-detail">
+                          <a
+                            href={getProvinceResources().website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: 'var(--fire-accent)', textDecoration: 'none' }}
+                          >
+                            Visit {getProvinceResources().name} Website →
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="safety-tips">
